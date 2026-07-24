@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrition Info</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/log">📋 Today's Log</a>
+        </nav>
+
+        <h1>{{ food_name }}</h1>
+        <p>Nutritional info per 100g — meal logged successfully ✅</p>
+
+        <div class="macro-grid">
+            <div class="macro-item">
+                <div class="value">{{ calories }}</div>
+                <div class="label">Calories (kcal)</div>
+            </div>
+            <div class="macro-item">
+                <div class="value">{{ protein }}g</div>
+                <div class="label">Protein</div>
+            </div>
+            <div class="macro-item">
+                <div class="value">{{ carbs }}g</div>
+                <div class="label">Carbs</div>
+            </div>
+            <div class="macro-item">
+                <div class="value">{{ fat }}g</div>
+                <div class="label">Fat</div>
+            </div>
+        </div>
+
+        <a href="/">← Search another food</a> &nbsp;|&nbsp;
+        <a href="/log">📋 View today's log</a>
+    </div>
+</body>
+</html>

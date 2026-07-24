@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/log">📋 Today's Log</a>
+        </nav>
+
+        <h1>Results for "{{ query }}"</h1>
+        <p>Select a product to view its nutrition and log it.</p>
+        <br>
+
+        {% for product in products %}
+        <div class="card">
+            <h3>{{ product.get("product_name", "Unknown product") }}</h3>
+            <form action="/nutrition" method="POST">
+                <input type="hidden" name="product_name" value="{{ product.get('product_name', 'Unknown') }}">
+                <input type="hidden" name="calories" value="{{ product.get('nutriments', {}).get('energy-kcal_100g', 0) }}">
+                <input type="hidden" name="protein" value="{{ product.get('nutriments', {}).get('proteins_100g', 0) }}">
+                <input type="hidden" name="carbs" value="{{ product.get('nutriments', {}).get('carbohydrates_100g', 0) }}">
+                <input type="hidden" name="fat" value="{{ product.get('nutriments', {}).get('fat_100g', 0) }}">
+                <button type="submit">Select & Log</button>
+            </form>
+        </div>
+        {% endfor %}
+
+        <a href="/">← Back to search</a>
+    </div>
+</body>
+</html>

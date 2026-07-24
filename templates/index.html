@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyMacros</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/log">📋 Today's Log</a>
+        </nav>
+
+        <h1>MyMacros</h1>
+        <p>Search for a food to get its nutritional information and log it to your daily diary.</p>
+
+        <br>
+        <form action="/search" method="POST">
+            <input type="text" name="food" placeholder="Search for a food e.g. banana, chicken...">
+            <button type="submit">Search</button>
+        </form>
+
+        <div class="ai-assistant">
+            <h2>🤖 AI Nutrition Assistant</h2>
+            <div class="ai-messages" id="ai-messages">
+                <div class="message ai">Hi! I'm your nutrition assistant. Ask me anything about your diet today!</div>
+            </div>
+            <div class="ai-input">
+                <input type="text" id="ai-input" placeholder="Ask me anything...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const input = document.getElementById('ai-input');
+            const messages = document.getElementById('ai-messages');
+            const text = input.value.trim();
+            if (!text) return;
+
+            messages.innerHTML += `<div class="message user">${text}</div>`;
+            input.value = '';
+
+            fetch('/ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text })
+            })
+            .then(res => res.json())
+            .then(data => {
+                messages.innerHTML += `<div class="message ai">${data.reply}</div>`;
+                messages.scrollTop = messages.scrollHeight;
+            });
+        }
+
+        document.getElementById('ai-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
