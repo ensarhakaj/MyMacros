@@ -3,40 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutrition Info</title>
+    <title>MyMacros - Logged</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <nav class="nav">
-            <a href="/">🏠 Home</a>
-            <a href="/log">📋 Today's Log</a>
-        </nav>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">MyMacros</a>
+        <div class="navbar-links">
+            <a href="/">Home</a>
+            <a href="/log">Today's Log</a>
+        </div>
+    </nav>
 
-        <h1>{{ food_name }}</h1>
-        <p>Nutritional info per 100g — meal logged successfully ✅</p>
+    <div class="container">
+        <p class="section-label">Meal Logged</p>
+        <h1 style="margin-bottom: 24px;">{{ food_name }}</h1>
 
         <div class="macro-grid">
             <div class="macro-item">
-                <div class="value">{{ calories }}</div>
-                <div class="label">Calories (kcal)</div>
+                <div class="value">{{ "%.0f"|format(calories) }}</div>
+                <div class="label">Calories</div>
             </div>
             <div class="macro-item">
-                <div class="value">{{ protein }}g</div>
+                <div class="value">{{ "%.1f"|format(protein) }}g</div>
                 <div class="label">Protein</div>
             </div>
             <div class="macro-item">
-                <div class="value">{{ carbs }}g</div>
+                <div class="value">{{ "%.1f"|format(carbs) }}g</div>
                 <div class="label">Carbs</div>
             </div>
             <div class="macro-item">
-                <div class="value">{{ fat }}g</div>
+                <div class="value">{{ "%.1f"|format(fat) }}g</div>
                 <div class="label">Fat</div>
             </div>
         </div>
 
-        <a href="/">← Search another food</a> &nbsp;|&nbsp;
-        <a href="/log">📋 View today's log</a>
+        <div style="margin-top: 24px; display: flex; gap: 16px;">
+            <a href="/">← Search another food</a>
+            <a href="/log">View today's log →</a>
+        </div>
     </div>
 </body>
 </html>

@@ -7,34 +7,125 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">MyMacros</a>
+        <div class="navbar-links">
+            <a href="/" class="active">Home</a>
+            <a href="/log">Today's Log</a>
+        </div>
+    </nav>
+
     <div class="container">
-        <nav class="nav">
-            <a href="/">🏠 Home</a>
-            <a href="/log">📋 Today's Log</a>
-        </nav>
+        <div class="hero">
+            <h1>MyMacros</h1>
+            <p>Track your nutrition, log your meals, and get AI-powered insights.</p>
+        </div>
 
-        <h1>MyMacros</h1>
-        <p>Search for a food to get its nutritional information and log it to your daily diary.</p>
-
-        <br>
         <form action="/search" method="POST">
             <input type="text" name="food" placeholder="Search for a food e.g. banana, chicken...">
             <button type="submit">Search</button>
         </form>
 
-        <div class="ai-assistant">
-            <h2>🤖 AI Nutrition Assistant</h2>
-            <div class="ai-messages" id="ai-messages">
-                <div class="message ai">Hi! I'm your nutrition assistant. Ask me anything about your diet today!</div>
-            </div>
-            <div class="ai-input">
-                <input type="text" id="ai-input" placeholder="Ask me anything...">
-                <button onclick="sendMessage()">Send</button>
-            </div>
+        <br>
+        <div class="card">
+            <h3>Scan Food</h3>
+            <p>Upload a photo to identify your food automatically.</p>
+            <br>
+            <input type="file" id="food-image" accept="image/*">
+            <br>
+            <button onclick="scanFood()">Scan</button>
+            <div id="scan-result" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <!-- Floating AI assistant -->
+    <button class="ai-widget-toggle" id="ai-toggle" aria-label="Open nutrition assistant" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.35 0-2.62-.32-3.73-.9L4 21l1.9-4.77A8.5 8.5 0 1 1 21 11.5Z"></path>
+        </svg>
+    </button>
+
+    <div class="ai-panel" id="ai-panel">
+        <div class="ai-panel-header">
+            <h2>AI Nutrition Assistant</h2>
+            <button class="ai-panel-close" id="ai-close" aria-label="Close assistant">&times;</button>
+        </div>
+        <div class="ai-messages" id="ai-messages">
+            <div class="message ai">Hi! I'm your nutrition assistant. Ask me anything about your diet, or say "log a banana for me".</div>
+        </div>
+        <div class="ai-input-row">
+            <input type="text" id="ai-input" placeholder="Ask me anything...">
+            <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
     <script>
+        function scanFood() {
+            const fileInput = document.getElementById('food-image');
+            const resultDiv = document.getElementById('scan-result');
+
+            if (!fileInput.files[0]) {
+                resultDiv.innerHTML = '<p style="color: var(--alert);">Please select an image first.</p>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<p style="color: var(--accent);">Analysing image...</p>';
+
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+
+            fetch('/scan', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    resultDiv.innerHTML = `<p style="color: var(--alert);">Could not identify food. Try a clearer image.</p>`;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div style="margin-top: 10px;">
+                            <p style="color: var(--accent-deep); font-weight: 700;">Detected: ${data.food} (${data.confidence}% confidence)</p>
+                            <p style="color: var(--ink-soft); font-size: 0.85rem; margin-top: 4px;">Other: ${data.all_results.slice(1).map(r => r.label).join(', ')}</p>
+                            <button onclick="searchDetectedFood('${data.food}')" style="margin-top: 12px;">Search & Log ${data.food}</button>
+                        </div>
+                    `;
+                }
+            })
+            .catch(() => {
+                resultDiv.innerHTML = '<p style="color: var(--alert);">Error scanning image. Try again.</p>';
+            });
+        }
+
+        function searchDetectedFood(food) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/search';
+            form.style.display = 'none';
+            const input = document.createElement('input');
+            input.name = 'food';
+            input.value = food;
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Floating AI assistant open/close
+        const aiToggle = document.getElementById('ai-toggle');
+        const aiPanel = document.getElementById('ai-panel');
+        const aiClose = document.getElementById('ai-close');
+
+        function toggleAiPanel() {
+            const isOpen = aiPanel.classList.toggle('open');
+            aiToggle.setAttribute('aria-expanded', isOpen);
+            if (isOpen) {
+                document.getElementById('ai-input').focus();
+            }
+        }
+
+        aiToggle.addEventListener('click', toggleAiPanel);
+        aiClose.addEventListener('click', toggleAiPanel);
+
         function sendMessage() {
             const input = document.getElementById('ai-input');
             const messages = document.getElementById('ai-messages');
@@ -43,6 +134,8 @@
 
             messages.innerHTML += `<div class="message user">${text}</div>`;
             input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+            messages.innerHTML += `<div class="message ai" id="loading">Thinking...</div>`;
 
             fetch('/ai', {
                 method: 'POST',
@@ -51,6 +144,7 @@
             })
             .then(res => res.json())
             .then(data => {
+                document.getElementById('loading').remove();
                 messages.innerHTML += `<div class="message ai">${data.reply}</div>`;
                 messages.scrollTop = messages.scrollHeight;
             });

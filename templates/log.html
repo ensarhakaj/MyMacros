@@ -3,38 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Today's Log</title>
+    <title>MyMacros - Today's Log</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <nav class="nav">
-            <a href="/">🏠 Home</a>
-            <a href="/log">📋 Today's Log</a>
-        </nav>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">MyMacros</a>
+        <div class="navbar-links">
+            <a href="/">Home</a>
+            <a href="/log" class="active">Today's Log</a>
+        </div>
+    </nav>
 
-        <h1>📋 Today's Log</h1>
-        <p>{{ today }}</p>
-        <br>
+    <div class="container">
+        <p class="section-label">{{ today }}</p>
+        <h1 style="margin-bottom: 24px;">Today's Log</h1>
 
         {% if logs %}
             {% for log in logs %}
             <div class="card">
                 <h3>{{ log[0] }}</h3>
-                <p>{{ log[1] }} kcal &nbsp;|&nbsp; Protein: {{ log[2] }}g &nbsp;|&nbsp; Carbs: {{ log[3] }}g &nbsp;|&nbsp; Fat: {{ log[4] }}g</p>
+                <p>{{ "%.0f"|format(log[1]) }} kcal &nbsp;|&nbsp; Protein: {{ "%.1f"|format(log[2]) }}g &nbsp;|&nbsp; Carbs: {{ "%.1f"|format(log[3]) }}g &nbsp;|&nbsp; Fat: {{ "%.1f"|format(log[4]) }}g</p>
             </div>
             {% endfor %}
 
             <div class="total-bar">
-                <div class="total-value">{{ total }} kcal</div>
-                <div>Total calories today</div>
+                <div class="total-value">{{ "%.0f"|format(total) }} kcal</div>
+                <div class="total-label">Total calories today</div>
             </div>
         {% else %}
-            <div class="card">
-                <p>No meals logged today yet. <a href="/">Search for a food</a> to get started!</p>
+            <div class="empty-state">
+                <p>No meals logged today yet.</p>
+                <br>
+                <a href="/">Search for a food to get started</a>
             </div>
         {% endif %}
 
+        <br>
         <a href="/">← Search another food</a>
     </div>
 </body>

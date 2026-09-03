@@ -67,7 +67,10 @@ def view_log():
     
     print(f"\nTotal calories today: {total} kcal")
 
-
+def clear_today_log():
+    today = str(datetime.date.today())
+    cursor.execute("DELETE FROM logs WHERE date = ?", (today,))
+    conn.commit()
 
 setup_database()
 
