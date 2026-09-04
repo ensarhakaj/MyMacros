@@ -35,7 +35,6 @@ A full stack AI-powered nutrition tracker built with Python, Flask, and SQLite. 
 - Implementing AI agents with tool calling (search, log, clear)
 - Using pre-trained computer vision models for food recognition
 - Securing API keys with environment variables
-- Building a responsive dark UI with CSS animations
 
 ## Problems I ran into
 - The Open Food Facts API kept returning empty responses with no error message. I didn't know if it was my code or their server. I added a status code check first which showed it was returning 403 Forbidden, then I realised I needed to send a User-Agent header to identify my app. After fixing that it still failed intermittently, so I implemented a retry loop that tries up to 3 times before giving up gracefully. That taught me never to assume an external API will be reliable
