@@ -1,4 +1,4 @@
-# MyMacros 🥗
+# MyMacros
 
 A full stack AI-powered nutrition tracker built with Python, Flask, and SQLite. Search for foods, scan photos to identify them, track your daily macros, and get personalised nutrition advice from an AI agent.
 
